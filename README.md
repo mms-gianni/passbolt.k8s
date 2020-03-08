@@ -1,5 +1,6 @@
 # Passbolt Helm Chart for Kubernets
 
+* [Documentation](https://github.com/actonica/passbolt.k8s/wiki)
 * Prerequsites
 * Generate GPG key
 * Install MySQL database manually (optional)
@@ -15,7 +16,7 @@ Standard SSL certificate for website.
 
 Before install Passbolt it is required to have public/private GPG key pair
 
-**Linux**
+## Linux
 
 Folder gpg-server-key
 
@@ -29,7 +30,7 @@ Folder gpg-server-key
 * Run *2.list-keys.sh* - see all keys list in your local GPG store, find your new generated key by email/name. Find line starting with [ sec ], find string similar to rsa4096/XXXXXXXXXX, take XXXXXXXXXX value - copy to clipboard
 * Run *3.export-key.sh XXXXXXXXXX* - this will export newly generated key into 2 files: *serverkey.asc* & *serverkey_private.asc*
 
-**Windows**
+## Windows
 
 Download GPG for windows from https://gnupg.org/download/
 1. Look "GnuPG binary releases" section. 
@@ -59,7 +60,7 @@ It can be used stable Helm Chart for MariaDB - https://github.com/helm/charts/tr
 
 # Install Passbolt
 
-**Configurable parameters**
+## Configurable parameters
 
 | Parameter | Description | Requried | Default |
 |-|-|-|:-:|
@@ -114,13 +115,13 @@ It can be used stable Helm Chart for MariaDB - https://github.com/helm/charts/tr
 | `database.resources.limits.cpu` | Max CPU for pod | | `500m` |
 
 
-**Installation**
+## Installation
 
 Copy SSL certificate key and crt files into *certs* directory *certificate.key* & *certificate.crt* names
 
 Copy GPG public and private key into *gpg* directory with *serverkey.asc* & *serverkey_private.asc* names
 
-**Using repo package**
+## Using repo package
 
 Add helm repo
 ```
@@ -134,7 +135,7 @@ Edit values.yaml and set required values or use command line parameters, e.g. `-
 helm install passbolt.k8s/passbolt --name=my-passbolt-release --set passbolt.config.serverName=passbolt.domain.com
 ```
 
-**Using source codes**
+## Using source codes
 
 ```
 git clone https://github.com/actonica/passbolt.k8s
