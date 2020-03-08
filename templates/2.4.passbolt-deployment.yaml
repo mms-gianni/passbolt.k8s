@@ -1,0 +1,105 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ template "passbolt.fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate 
+  selector:
+    matchLabels:
+      app: {{ template "passbolt.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "passbolt.fullname" . }}
+    spec:
+      containers:
+        - name: passbolt
+          image: "{{ .Values.passbolt.image.repository }}:{{ .Values.passbolt.image.tag }}"
+          imagePullPolicy: {{ .Values.passbolt.image.pullPolicy }}
+{{- if .Values.passbolt.resources }}
+          resources:
+{{ toYaml .Values.passbolt.resources | indent 12 }}
+{{- end }}
+{{- if or (.Values.passbolt.dbPassword) (.Values.database.password) -}}
+{{- else }}
+          env:
+            - name: DATASOURCES_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "database.fullname" . }}
+                  key: database-password
+{{- end }}
+{{- if .Values.database.user -}}
+{{- else }}
+            - name: DATASOURCES_DEFAULT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "database.fullname" . }}
+                  key: database-user
+{{- end }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+{{- if .Values.passbolt.tls.enabled }}
+            - containerPort: 443
+              protocol: TCP
+{{- end }}
+          volumeMounts:
+            - name: gpg
+              mountPath: /var/www/passbolt/config/gpg
+              readOnly: true
+            - name: config-passbolt
+              mountPath: /var/www/passbolt/config/passbolt.php
+              subPath: passbolt.php
+              readOnly: true
+{{- if .Values.passbolt.ingress.letsEncrypt.enabled }}
+            - name: certs-key
+              mountPath: /etc/ssl/certs/certificate.key
+              subPath: tls.key
+              readOnly: true
+            - name: certs-crt
+              mountPath: /etc/ssl/certs/certificate.crt
+              subPath: tls.crt
+              readOnly: true
+{{- else }}
+            - name: certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
+{{- end }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 300
+            timeoutSeconds: 30
+      volumes:
+        - name: config-passbolt
+          configMap:
+            name: {{ template "passbolt.fullname" . }}-config
+        - name: gpg
+          configMap:
+            name: {{ template "passbolt.fullname" . }}-gpg
+{{- if .Values.passbolt.tls.enabled }}
+{{- if .Values.passbolt.ingress.letsEncrypt.enabled }}
+        - name: certs-key
+          secret:
+            secretName: {{ .Values.passbolt.ingress.tlsSecretName | default (printf "%s-%s" "tls" (include "passbolt.fullname" .)) }}
+        - name: certs-crt
+          secret:
+            secretName: {{ .Values.passbolt.ingress.tlsSecretName | default (printf "%s-%s" "tls" (include "passbolt.fullname" .)) }}
+{{- else }}
+        - name: certs
+          secret:
+            secretName: {{ template "passbolt.fullname" . }}-cert
+{{- end }}
+{{- else }}
+        - name: certs
+          emptyDir: {}
+{{- end }}

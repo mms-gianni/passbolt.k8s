@@ -1,0 +1,41 @@
+{{- if .Values.passbolt.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "passbolt.fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+{{- if .Values.passbolt.tls.enabled }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+{{- end }}
+{{- if .Values.passbolt.ingress.letsEncrypt.enabled }}
+    certmanager.k8s.io/cluster-issuer: letsencrypt
+    kubernetes.io/tls-acme: 'true'
+    nginx.ingress.kubernetes.io/tls-acme: 'true'
+{{- end }}
+spec:
+{{- if .Values.passbolt.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.passbolt.config.serverName }}
+    secretName: {{ .Values.passbolt.ingress.tlsSecretName | default (printf "%s-%s" "tls" (include "passbolt.fullname" .)) }}
+{{- end }}
+  rules:
+  - host: {{ .Values.passbolt.config.serverName }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "passbolt.fullname" . }}
+{{- if .Values.passbolt.tls.enabled }}
+          servicePort: {{ .Values.passbolt.service.port | default "443" }}
+{{- else }}
+          servicePort: {{ .Values.passbolt.service.port | default "80" }}
+{{- end }}
+{{- end -}}

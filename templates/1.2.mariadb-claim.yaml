@@ -1,0 +1,24 @@
+{{- if and .Values.database.enabled .Values.database.persistence.enabled -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "database.fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if and (.Values.database.persistence.storageClass) (ne "-" .Values.database.persistence.storageClass) }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "{{ .Values.database.persistence.storageClass }}"
+{{- end }}
+spec:
+  accessModes:
+    - {{ .Values.database.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.database.persistence.size }}
+{{- if and (.Values.database.persistence.storageClass) (eq "-" .Values.database.persistence.storageClass) }}
+  storageClassName: ""
+{{- end }}
+{{- end -}}

@@ -1,0 +1,80 @@
+{{- if .Values.database.enabled -}}
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ template "database.fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.database.replicas }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ template "database.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "database.fullname" . }}
+    spec:
+      initContainers:
+        - name: passbolt-db-init
+          image: busybox
+# It will requries to change path in case of use another mysql image
+          command: ['sh', '-c', 'chown -R 1001:1001 /bitnami/mariadb']
+          volumeMounts:
+            - name: storage
+              mountPath: /bitnami/mariadb
+      containers:
+        - name: passbolt-db
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          imagePullPolicy: {{ .Values.database.image.pullPolicy }}
+{{- if .Values.database.resources }}
+          resources:
+{{ toYaml .Values.database.resources | indent 12 }}
+{{- end }}
+          env:
+            - name: MARIADB_DATABASE
+              value: passbolt
+            - name: MARIADB_USER
+{{- if .Values.database.user }}
+              value: {{ .Values.database.user }}
+{{- else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "database.fullname" . }}
+                  key: database-user
+{{- end }}
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "database.fullname" . }}
+                  key: database-password
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                    name: {{ template "database.fullname" . }}
+                    key: database-root-password
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          volumeMounts:
+            - name: storage
+              mountPath: /bitnami/mariadb
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+      volumes:
+        - name: storage
+{{- if or .Values.database.persistence.enabled .Values.database.persistence.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.database.persistence.existingClaim | default (include "database.fullname" .) }}
+{{- else }}
+          emptyDir: {}
+{{- end }}
+{{- end }}

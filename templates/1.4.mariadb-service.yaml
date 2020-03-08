@@ -1,0 +1,19 @@
+{{- if .Values.database.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "database.fullname" . }}
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.database.service.type }}
+  ports:
+    - port: 3306
+      targetPort: {{ .Values.database.service.port | default "3306" }}
+      protocol: TCP
+  selector:
+    app: {{ template "database.fullname" . }}
+{{- end -}}
