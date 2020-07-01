@@ -68,7 +68,7 @@ passbolt:
     enabled: true
 #    tlsSecretName: ""
     letsEncrypt:
-      enabled: true
+      enabled: false
       
 
 ## Default values for Database.
