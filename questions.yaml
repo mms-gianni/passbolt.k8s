@@ -1,4 +1,8 @@
 questions:
+- variable: passbolt.image.tag
+  label: Docker image tag
+  default: "latest-debian"
+  type: string
 - variable: passbolt.config.serverName
   label: Server Name
   description: "passbolt.yourdomain.com"
