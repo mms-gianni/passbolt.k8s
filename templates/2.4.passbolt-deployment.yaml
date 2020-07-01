@@ -71,7 +71,7 @@ spec:
 {{- else }}
             - name: certs
               mountPath: /etc/ssl/certs
-              readOnly: true
+              readOnly: false
 {{- end }}
           livenessProbe:
             httpGet:
