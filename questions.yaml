@@ -1,0 +1,102 @@
+questions:
+- variable: passbolt.config.serverName
+  label: Server Name
+  description: "passbolt.yourdomain.com"
+  type: string
+- variable: passbolt.config.salt
+  label: Salt
+  description: "A random string used in security hashing methods."
+  type: string
+- variable: passbolt.config.gpgFingerprint
+  label: GPG Fingerprint
+  description: "Server private key fingerprint."
+  type: string
+
+- variable: passbolt.config.email.from
+  label: Mail From
+  description: "passbolt@domain.com"
+  type: string
+- variable: passbolt.config.email.name
+  label: Mail Name
+  description: "Passbolt Team"
+  type: string
+- variable: passbolt.config.email.reply_to
+  label: Mail Replyto
+  description: "no-reply@domain.com"
+  type: string
+- variable: passbolt.config.email.smtp.enabled
+  label: enable SMTP
+  type: boolean
+  default: true
+  required: true
+  show_subquestion_if: true
+  group: "SMTP Configuration"
+  subquestions:
+  - variable: passbolt.config.email.smtp.address
+    label: SMTP Hostname
+    description: "smtp.domain.com"
+    type: string
+  - variable: passbolt.config.email.smtp.address
+    label: SMTP Port
+    default: 587
+    type: int
+  - variable: passbolt.config.email.smtp.domain
+    label: Domain
+    description: "domain.com"
+    type: string
+  - variable: passbolt.config.email.smtp.username
+    label: Username
+    description: "passboltuser"
+    type: string
+  - variable: passbolt.config.email.smtp.password
+    label: Password
+    type: password
+  - variable: passbolt.config.email.smtp.tls
+    label: TLS enabled
+    default: true
+    type: boolean
+
+- variable: passbolt.tls.enable
+  label: TLS enable
+  type: boolean
+  default: true
+
+- variable: passbolt.service.type
+  label: Service Type
+  type: enum
+  default: 'ClusterIP'
+  options: 
+    - "LoadBalancer"
+    - "NodePort"
+    - "ClusterIP"
+
+- variable: database.enabled
+  label: Database
+  type: boolean
+  default: true
+  required: true
+  show_subquestion_if: true
+  group: "Database Configuration"
+  subquestions:
+  - variable: database.persistence.storageClass
+    label: Persistent Storage Class 
+    required: true
+    type: storageclass
+  - variable: database.persistence.size
+    label: Storage Size
+    required: true
+    type: string
+    default: "1Gi"
+  - variable: database.user
+    label: Username
+    required: true
+    type: string
+    default: "passbolt-usr"
+  - variable: database.password
+    label: Password
+    required: true
+    type: password
+  - variable: database.rootPassword
+    label: Root Password
+    required: true
+    type: password
