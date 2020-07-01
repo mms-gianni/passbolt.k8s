@@ -78,6 +78,11 @@ questions:
   show_subquestion_if: true
   group: "Database Configuration"
   subquestions:
+  - variable: database.service.port
+    label: Mysql Service Port 
+    required: true
+    type: string
+    default: "3306"
   - variable: database.persistence.storageClass
     label: Persistent Storage Class 
     required: true
