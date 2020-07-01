@@ -56,7 +56,12 @@ data:
         'Datasources' => [
             'default' => [
                 'host' => '{{ .Values.passbolt.dbHost | default (include "database.fullname" .) }}',
-                'port' => '{{ .Values.passbolt.dbPort | .Values.database.service.port | default ("3306") }}',
+{{- if .Values.passbolt.dbPort }}
+                'port' => '{{ .Values.passbolt.dbPort | default ("3306") }}',
+{{- end }}
+{{- if and .Values.database.enabled .Values.database.service.port }}
+                'port' => '{{ .Values.database.service.port | default ("3306") }}',
+{{- end }}
 {{- if .Values.passbolt.dbUsername }}
                 'username' => '{{ .Values.passbolt.dbUsername }}',
 {{- end }}
