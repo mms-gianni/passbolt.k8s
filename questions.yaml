@@ -60,8 +60,13 @@ questions:
     default: true
     type: boolean
 
-- variable: passbolt.tls.enable
+- variable: passbolt.tls.enabled
   label: TLS enable
+  type: boolean
+  default: true
+
+- variable: passbolt.ingress.letsEncrypt.enabled
+  label: Lets Encrypt enables
   type: boolean
   default: true
 
