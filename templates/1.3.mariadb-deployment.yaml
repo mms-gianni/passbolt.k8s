@@ -20,14 +20,14 @@ spec:
       labels:
         app: {{ template "database.fullname" . }}
     spec:
-      initContainers:
-        - name: passbolt-db-init
-          image: busybox
-# It will requries to change path in case of use another mysql image
-          command: ['sh', '-c', 'chown -R 1001:1001 /bitnami/mariadb']
-          volumeMounts:
-            - name: storage
-              mountPath: /bitnami/mariadb
+#      initContainers:
+#        - name: passbolt-db-init
+#          image: busybox
+## It will requries to change path in case of use another mysql image
+#          command: ['sh', '-c', 'chown -R 1001:1001 /bitnami/mariadb']
+#          volumeMounts:
+#            - name: storage
+#              mountPath: /bitnami/mariadb
       containers:
         - name: passbolt-db
           image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
