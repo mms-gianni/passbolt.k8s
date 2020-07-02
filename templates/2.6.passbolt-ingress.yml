@@ -19,6 +19,9 @@ metadata:
     kubernetes.io/tls-acme: 'true'
     nginx.ingress.kubernetes.io/tls-acme: 'true'
 {{- end }}
+{{- with .Values.passbolt.ingress.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.passbolt.tls.enabled }}
   tls:

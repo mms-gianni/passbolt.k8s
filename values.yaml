@@ -69,7 +69,7 @@ passbolt:
 #    tlsSecretName: ""
     letsEncrypt:
       enabled: false
-      
+    annotations: {}
 
 ## Default values for Database.
 ##
