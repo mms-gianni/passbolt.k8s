@@ -60,15 +60,19 @@ questions:
     default: true
     type: boolean
 
+- variable: passbolt.ingress.annotations
+  label: Lets Encrypt enables
+  type: string
+
 - variable: passbolt.tls.enabled
   label: TLS enable
   type: boolean
-  default: true
+  default: false
 
 - variable: passbolt.ingress.letsEncrypt.enabled
   label: Lets Encrypt enables
   type: boolean
-  default: true
+  default: false
 
 - variable: passbolt.service.type
   label: Service Type
