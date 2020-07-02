@@ -71,7 +71,11 @@ spec:
 {{- else }}
             - name: certs
               mountPath: /etc/ssl/certs
+{{- if .Values.passbolt.tls.enabled }}
+              readOnly: true
+{{- else }}
               readOnly: false
+{{- end }}
 {{- end }}
           livenessProbe:
             httpGet:
