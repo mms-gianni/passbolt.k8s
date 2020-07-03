@@ -1,8 +1,8 @@
 apiVersion: v1
 home: http://passbolt.com
 description: A Passbolt Helm chart for Kubernetes. Passbolt is a free and open source password manager that allows team members to store and share credentials securely. For instance, the wifi password of your office, the administrator password of a router or your organisation social media account password, all of them can be secured using passbolt.
-name: passbolt
-version: 1.0
+name: passbolt.k8s
+version: 1.0.1
 sources:
   - https://github.com/actonica/passbolt.k8s
 maintainers:
