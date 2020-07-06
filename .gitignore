@@ -1,5 +1,1 @@
-certs/certificate.cert
-certs/certificate.key
-gpg/serverkey.asc
-gpg/serverkey_private.asc
 gpg-server-key/gpg-server-key.conf
