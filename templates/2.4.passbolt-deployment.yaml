@@ -84,6 +84,11 @@ spec:
             initialDelaySeconds: 300
             timeoutSeconds: 30
       volumes:
+{{- if .Values.passbolt.config.license.enabled }}
+        - name: license-passbolt
+          secret:
+            secretName: {{ template "passbolt.fullname" . }}-license
+{{- end }}
         - name: config-passbolt
           configMap:
             name: {{ template "passbolt.fullname" . }}-config
